@@ -3,18 +3,10 @@
   ******************************************************************************
   * @file           : main.c
   * @brief          : Main program body
+  * @contact        : Vishal Meyyappan R (vishalmeyyappanr.act2024@citchennai.net)
+  * @authors        : Arthita S, Srikar, Lokesh, Vishal Meyyappan R
   ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+  */ 
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -112,9 +104,9 @@ static void J1939_Update_Display(void);
 // Simple LED blinking for status
 static void LED_Blink(uint8_t times, uint32_t delay_ms) {
     for (uint8_t i = 0; i < times; i++) {
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET); // RESET turns PC13 ON
         HAL_Delay(delay_ms);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);   // SET turns PC13 OFF
         HAL_Delay(delay_ms);
     }
 }
@@ -297,18 +289,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE(); // Changed from GPIOD
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET); // Set HIGH to turn off PC13 LED natively
 
-  /*Configure GPIO pin : PD2 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 
 /* USER CODE BEGIN 4 */
@@ -748,7 +740,7 @@ static void J1939_Update_Display(void) {
         last_display_update = current_time;
 
         // Blink LED to show activity
-        HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
         // You could add serial output here for debugging:
         // printf("Test: %s, Frames: %lu, Remaining: %lu s\r\n",
@@ -772,7 +764,7 @@ void Error_Handler(void)
   while (1)
   {
     // Rapid LED blinking on error
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_2);
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     HAL_Delay(100);
   }
   /* USER CODE END Error_Handler_Debug */
