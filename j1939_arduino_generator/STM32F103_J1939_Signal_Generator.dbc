@@ -1,0 +1,150 @@
+VERSION "STM32F103 J1939 Signal Generator"
+
+NS_ :
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: STM32_Engine STM32_Transmission
+
+BO_ 2364539904 EEC1: 8 STM32_Engine
+ SG_ SPN899_EngineTorqueMode : 0|4@1+ (1,0) [0|15] "state" Vector__XXX
+ SG_ SPN512_DriverDemandEngineTorque : 8|8@1+ (1,-125) [-125|125] "%" Vector__XXX
+ SG_ SPN513_ActualEnginePercentTorque : 16|8@1+ (1,-125) [-125|125] "%" Vector__XXX
+ SG_ SPN190_EngineSpeed : 24|16@1+ (0.125,0) [0|8031.875] "rpm" Vector__XXX
+ SG_ SPN2432_EngineDemandPercentTorque : 56|8@1+ (1,-125) [-125|125] "%" Vector__XXX
+
+BO_ 2364539648 EEC2: 8 STM32_Engine
+ SG_ SPN91_AcceleratorPedalPosition1 : 8|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+ SG_ SPN92_EnginePercentLoadAtCurrentSpeed : 16|8@1+ (1,0) [0|125] "%" Vector__XXX
+
+BO_ 2365517312 ET1: 8 STM32_Engine
+ SG_ SPN110_EngineCoolantTemperature : 0|8@1+ (1,-40) [-40|210] "degC" Vector__XXX
+ SG_ SPN175_EngineOilTemperature1 : 8|16@1+ (0.03125,-273) [-273|1735] "degC" Vector__XXX
+
+BO_ 2365517568 EFL_P1: 8 STM32_Engine
+ SG_ SPN98_EngineOilLevel : 0|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+ SG_ SPN100_EngineOilPressure : 24|8@1+ (4,0) [0|1000] "kPa" Vector__XXX
+
+BO_ 2365518080 CCVS1: 8 STM32_Engine
+ SG_ SPN84_WheelBasedVehicleSpeed : 8|16@1+ (0.00390625,0) [0|250.996] "km/h" Vector__XXX
+
+BO_ 2364541184 VDS: 8 STM32_Engine
+ SG_ SPN1807_SteeringWheelAngle : 0|16@1+ (0.0009765625,-31.374) [-31.374|31.374] "rad" Vector__XXX
+ SG_ SPN1408_YawRate : 24|16@1+ (0.00012207031,-3.92) [-3.92|3.92] "rad/s" Vector__XXX
+ SG_ SPN1809_LateralAcceleration : 40|16@1+ (0.00048828125,-15.687) [-15.687|15.687] "m/s2" Vector__XXX
+ SG_ SPN1810_LongitudinalAcceleration : 56|8@1+ (0.1,-12.5) [-12.5|12.5] "m/s2" Vector__XXX
+
+BO_ 2364540163 ETC2: 8 STM32_Transmission
+ SG_ SPN523_TransmissionCurrentGear : 24|8@1+ (1,-125) [-125|125] "gear" Vector__XXX
+
+BO_ 2365519875 TF1: 8 STM32_Transmission
+ SG_ SPN127_TransmissionOilPressure : 24|8@1+ (16,0) [0|4000] "kPa" Vector__XXX
+ SG_ SPN177_TransmissionOilTemperature : 32|16@1+ (0.03125,-273) [-273|1735] "degC" Vector__XXX
+
+BO_ 2364539136 EBC1: 8 STM32_Engine
+ SG_ SPN521_BrakePedalPosition : 8|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+
+BO_ 2365520384 BRK_AIR: 8 STM32_Engine
+ SG_ SPN116_BrakeApplicationPressure : 0|8@1+ (4,0) [0|1000] "kPa" Vector__XXX
+
+BO_ 2364547840 AT1_SCR_DOSING: 8 STM32_Engine
+ SG_ SPN4331_SCRActualDosingReagentQuantity : 0|16@1+ (0.3,0) [0|19276.5] "g/h" Vector__XXX
+
+BO_ 2365478400 AT1_SCR_TANK: 8 STM32_Engine
+ SG_ SPN1761_SCRCatalystTankLevel : 0|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+ SG_ SPN1760_SCRCatalystTankTemperature : 8|8@1+ (1,-40) [-40|210] "degC" Vector__XXX
+
+BO_ 2365436672 AT1_DPF_TEMP1: 8 STM32_Engine
+ SG_ SPN3250_DPFInletGasTemperature : 0|16@1+ (0.03125,-273) [-273|1735] "degC" Vector__XXX
+ SG_ SPN3251_DPFOutletGasTemperature : 16|16@1+ (0.03125,-273) [-273|1735] "degC" Vector__XXX
+
+BO_ 2365519104 AMB: 8 STM32_Engine
+ SG_ SPN108_BarometricPressure : 0|8@1+ (0.5,0) [0|125] "kPa" Vector__XXX
+ SG_ SPN170_CabInteriorTemperature : 8|16@1+ (0.03125,-273) [-273|1735] "degC" Vector__XXX
+ SG_ SPN171_AmbientAirTemperature : 24|16@1+ (0.03125,-273) [-273|1735] "degC" Vector__XXX
+ SG_ SPN172_EngineAirInletTemperature : 40|8@1+ (1,-40) [-40|210] "degC" Vector__XXX
+ SG_ SPN79_RoadSurfaceTemperature : 48|16@1+ (0.03125,-273) [-273|1735] "degC" Vector__XXX
+
+BO_ 2365519616 VOLTS_AMPS: 8 STM32_Engine
+ SG_ SPN167_AlternatorCurrent : 0|16@1+ (0.05,0) [0|3212.75] "A" Vector__XXX
+ SG_ SPN168_BatteryPotentialVoltage : 16|16@1+ (0.05,0) [0|3212.75] "V" Vector__XXX
+
+BO_ 2365504768 FAN_DRIVE: 8 STM32_Engine
+ SG_ SPN1639_EstimatedFanSpeedPercent : 0|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+ SG_ SPN975_FanSpeed : 16|16@1+ (0.125,0) [0|8031.875] "rpm" Vector__XXX
+
+BO_ 2365520896 DASH: 8 STM32_Engine
+ SG_ SPN80_WasherFluidLevel : 0|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+ SG_ SPN96_FuelLevel1 : 8|8@1+ (0.4,0) [0|100] "%" Vector__XXX
+
+CM_ BO_ 2364539904 "PGN 61444 (0xF004), priority 3, source address 0x00, cycle 50 ms.";
+CM_ BO_ 2364539648 "PGN 61443 (0xF003), priority 3, source address 0x00, cycle 50 ms.";
+CM_ BO_ 2365517312 "PGN 65262 (0xFEEE), priority 3, source address 0x00, cycle 1000 ms.";
+CM_ BO_ 2365517568 "PGN 65263 (0xFEEF), priority 3, source address 0x00, cycle 500 ms.";
+CM_ BO_ 2365518080 "PGN 65265 (0xFEF1), priority 3, source address 0x00, cycle 100 ms.";
+CM_ BO_ 2364541184 "PGN 61449 (0xF009), priority 3, source address 0x00, cycle 50 ms.";
+CM_ BO_ 2364540163 "PGN 61445 (0xF005), priority 3, source address 0x03, cycle 50 ms.";
+CM_ BO_ 2365519875 "PGN 65272 (0xFEF8), priority 3, source address 0x03, cycle 1000 ms.";
+CM_ BO_ 2364539136 "PGN 61441 (0xF001), priority 3, source address 0x00, cycle 100 ms.";
+CM_ BO_ 2365520384 "PGN 65274 (0xFEFA), priority 3, source address 0x00, cycle 1000 ms.";
+CM_ BO_ 2364547840 "PGN 61475 (0xF023), priority 3, source address 0x00, cycle 100 ms.";
+CM_ BO_ 2365478400 "PGN 65110 (0xFE56), priority 3, source address 0x00, cycle 1000 ms.";
+CM_ BO_ 2365436672 "PGN 64947 (0xFDB3), priority 3, source address 0x00, cycle 1000 ms.";
+CM_ BO_ 2365519104 "PGN 65269 (0xFEF5), priority 3, source address 0x00, cycle 1000 ms.";
+CM_ BO_ 2365519616 "PGN 65271 (0xFEF7), priority 3, source address 0x00, cycle 1000 ms.";
+CM_ BO_ 2365504768 "PGN 65213 (0xFEBD), priority 3, source address 0x00, cycle 1000 ms.";
+CM_ BO_ 2365520896 "PGN 65276 (0xFEFC), priority 3, source address 0x00, cycle 1000 ms.";
+
+BA_DEF_ BO_ "VFrameFormat" ENUM "StandardCAN","ExtendedCAN","reserved","J1939PG";
+BA_DEF_ "BusType" STRING ;
+BA_DEF_ "ProtocolType" STRING ;
+BA_DEF_DEF_ "VFrameFormat" "J1939PG";
+BA_DEF_DEF_ "BusType" "CAN";
+BA_DEF_DEF_ "ProtocolType" "J1939";
+BA_ "BusType" "CAN";
+BA_ "ProtocolType" "J1939";
+BA_ "VFrameFormat" BO_ 2364539904 3;
+BA_ "VFrameFormat" BO_ 2364539648 3;
+BA_ "VFrameFormat" BO_ 2365517312 3;
+BA_ "VFrameFormat" BO_ 2365517568 3;
+BA_ "VFrameFormat" BO_ 2365518080 3;
+BA_ "VFrameFormat" BO_ 2364541184 3;
+BA_ "VFrameFormat" BO_ 2364540163 3;
+BA_ "VFrameFormat" BO_ 2365519875 3;
+BA_ "VFrameFormat" BO_ 2364539136 3;
+BA_ "VFrameFormat" BO_ 2365520384 3;
+BA_ "VFrameFormat" BO_ 2364547840 3;
+BA_ "VFrameFormat" BO_ 2365478400 3;
+BA_ "VFrameFormat" BO_ 2365436672 3;
+BA_ "VFrameFormat" BO_ 2365519104 3;
+BA_ "VFrameFormat" BO_ 2365519616 3;
+BA_ "VFrameFormat" BO_ 2365504768 3;
+BA_ "VFrameFormat" BO_ 2365520896 3;

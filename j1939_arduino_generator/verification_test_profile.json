@@ -1,0 +1,11 @@
+{
+  "0x0CF00400": {
+    "SPN190_EngineSpeed": 1500.0
+  },
+  "0x0CFEF100": {
+    "SPN84_WheelBasedVehicleSpeed": 60.0
+  },
+  "0x0CF00100": {
+    "SPN521_BrakePedalPosition": 30.0
+  }
+}
