@@ -24,6 +24,7 @@ extern "C" {
 #define PGN_EEC2            61443u  /* 0xF003 Electronic Engine Controller 2   50 ms */
 #define PGN_ENGINE_TEMP1    65262u  /* 0xFEEE Engine Temperature 1           1000 ms */
 #define PGN_ENGINE_FLUIDS1  65263u  /* 0xFEEF Engine Fluid Level/Pressure     500 ms */
+#define PGN_ENGINE_FLUIDS2  65270u  /* 0xFEF6 Engine Fluids 2                 500 ms */
 
 /* Vehicle motion */
 #define PGN_CCVS1           65265u  /* 0xFEF1 Cruise Control/Vehicle Speed 1  100 ms */
@@ -63,6 +64,7 @@ extern "C" {
 
 /* Water in fuel */
 #define PGN_WATER_IN_FUEL   65279u  /* 0xFEFF Water In Fuel Indicator        1000 ms */
+#define PGN_LFE             65266u  /* 0xFEF2 Fuel Economy Liquid            100 ms */
 
 
 /* =============================================================================
@@ -93,7 +95,7 @@ extern "C" {
 
 /* ---- VDS (PGN 61449) ---- */
 #define SPN_STEERING_ANGLE          1807u
-#define SPN_YAW_RATE                1408u
+#define SPN_YAW_RATE                1808u
 #define SPN_LATERAL_ACCEL           1809u
 #define SPN_LONG_ACCEL              1810u
 
@@ -118,11 +120,11 @@ extern "C" {
 
 /* ---- AT1 SCR Tank (PGN 65110) ---- */
 #define SPN_SCR_TANK_LEVEL          1761u
-#define SPN_SCR_TANK_TEMP           1760u
+#define SPN_SCR_TANK_TEMP           3031u
 
 /* ---- DPF Temperature 1 (PGN 64947) ---- */
 #define SPN_DPF_INLET_TEMP          3250u
-#define SPN_DPF_OUTLET_TEMP         3251u
+#define SPN_DPF_OUTLET_TEMP         3246u
 
 /* ---- Ambient (PGN 65269) ---- */
 #define SPN_BARO_PRESSURE           108u
@@ -132,8 +134,9 @@ extern "C" {
 #define SPN_ROAD_SURFACE_TEMP       79u
 
 /* ---- Electrical (PGN 65271) ---- */
-#define SPN_ALTERNATOR_CURRENT      167u
-#define SPN_BATTERY_VOLTAGE         168u
+#define SPN_ALTERNATOR_CURRENT      115u
+#define SPN_BATTERY_VOLTAGE         167u
+#define SPN_BATTERY_POTENTIAL       168u
 
 /* ---- Fan Drive (PGN 65213) ---- */
 #define SPN_FAN_DRIVE_PCT           1639u
@@ -152,11 +155,18 @@ extern "C" {
 #define SPN_YEAR                    964u
 
 /* ---- Turbocharger 1 (PGN 65190) ---- */
-#define SPN_TURBO_BOOST_PRESS       102u
+#define SPN_TURBO_BOOST_PRESS       1127u
 #define SPN_TURBO_SPEED             103u
 
 /* ---- Water In Fuel (PGN 65279) ---- */
 #define SPN_WATER_IN_FUEL_FLAG      97u
+
+/* ---- Engine Fluids 2 / Intake Pressure (PGN 65270 / 0xFEF6) ---- */
+#define SPN_INTAKE_MANIFOLD_PRESSURE 102u
+
+/* ---- Fuel Economy Liquid (PGN 65266 / 0xFEF2) ---- */
+#define SPN_ENGINE_FUEL_RATE        183u
+#define SPN_ENGINE_INST_FUEL_ECON   184u
 
 
 /* =============================================================================

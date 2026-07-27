@@ -1,11 +1,15 @@
 {
   "0x0CF00400": {
-    "SPN190_EngineSpeed": 1500.0
+    "Engine_Speed": 1500.0
+  },
+  "0x0CF00300": {
+    "Accel_Pedal_Pos": 50.0
   },
   "0x0CFEF100": {
-    "SPN84_WheelBasedVehicleSpeed": 60.0
+    "Vehicle_Speed": 60.0
   },
-  "0x0CF00100": {
-    "SPN521_BrakePedalPosition": 30.0
+  "0x0CFEF200": {
+    "Engine_Fuel_Rate": 100.0,
+    "Engine_Inst_Fuel_Economy": 15.0
   }
 }

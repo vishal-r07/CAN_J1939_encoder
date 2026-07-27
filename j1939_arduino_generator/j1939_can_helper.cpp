@@ -10,6 +10,12 @@ extern "C" void HAL_CAN_MspInit(CAN_HandleTypeDef* hcan_inst) {
         __HAL_RCC_GPIOB_CLK_ENABLE();
         __HAL_RCC_AFIO_CLK_ENABLE();
 
+        /* Remap CAN1 pins to PB8 and PB9 FIRST before initializing GPIO pins */
+        __HAL_AFIO_REMAP_CAN1_2();
+
+        /* Pre-set PB9 to HIGH (recessive) to prevent dominant glitch during startup */
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+
         /* Configure CAN GPIO pins:
            PB9 (CAN_TX)  ------> Alternate Function Push-Pull (Arduino D14)
            PB8 (CAN_RX)  ------> Input with Pull-Up (Arduino D15)
@@ -25,9 +31,6 @@ extern "C" void HAL_CAN_MspInit(CAN_HandleTypeDef* hcan_inst) {
         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
         GPIO_InitStruct.Pull = GPIO_PULLUP;
         HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-        /* Remap CAN1 pins to PB8 and PB9 */
-        __HAL_AFIO_REMAP_CAN1_2();
     }
 }
 
@@ -49,35 +52,38 @@ bool J1939_CAN_Hardware_Init(void) {
     uint32_t ts2 = CAN_BS2_2TQ;
     uint32_t tq_sum = 18;
 
-    /* Optimize bit timing configuration dynamically to achieve exactly 250 kbps (0% error) */
+    /* Optimize bit timing configuration dynamically for 250 kbps (Standard ~80% sample point) */
     if (pclk1 == 36000000) {
-        prescaler = 8;
-        ts1 = CAN_BS1_15TQ;
-        ts2 = CAN_BS2_2TQ;
-        tq_sum = 18;
+        prescaler = 9;
+        ts1 = CAN_BS1_12TQ;  // 12 TQ
+        ts2 = CAN_BS2_3TQ;   // 3 TQ
+        tq_sum = 16;         // Sample Point = (1 + 12) / 16 = 81.25%
     } else if (pclk1 == 32000000) {
         prescaler = 8;
-        ts1 = CAN_BS1_13TQ;  // 13 TQ for Seg1
-        ts2 = CAN_BS2_2TQ;   // 2 TQ for Seg2
-        tq_sum = 16;         // Total TQ = 1 (Sync) + 13 + 2 = 16 TQ
+        ts1 = CAN_BS1_12TQ;
+        ts2 = CAN_BS2_3TQ;
+        tq_sum = 16;         // Sample Point = 81.25%
     } else if (pclk1 == 18000000) {
         prescaler = 4;
-        ts1 = CAN_BS1_15TQ;
-        ts2 = CAN_BS2_2TQ;
-        tq_sum = 18;
+        ts1 = CAN_BS1_13TQ;
+        ts2 = CAN_BS2_4TQ;
+        tq_sum = 18;         // Sample Point = 77.78%
     } else if (pclk1 == 8000000) {
         prescaler = 2;
-        ts1 = CAN_BS1_13TQ;
-        ts2 = CAN_BS2_2TQ;
-        tq_sum = 16;
+        ts1 = CAN_BS1_12TQ;
+        ts2 = CAN_BS2_3TQ;
+        tq_sum = 16;         // Sample Point = 81.25%
     } else {
-        /* Generic divisor fallback */
+    /* Generic divisor fallback */
         bool found = false;
-        for (uint32_t tq = 18; tq >= 8; tq--) {
+        for (uint32_t tq = 16; tq >= 8; tq--) {
             if ((pclk1 % (tq * 250000)) == 0) {
                 prescaler = pclk1 / (tq * 250000);
-                ts1 = (tq - 3 - 1) << CAN_BTR_TS1_Pos;
-                ts2 = CAN_BS2_2TQ;
+                uint32_t seg2 = tq / 5;
+                if (seg2 < 1) seg2 = 1;
+                uint32_t seg1 = tq - 1 - seg2;
+                ts1 = (seg1 - 1) << CAN_BTR_TS1_Pos;
+                ts2 = (seg2 - 1) << CAN_BTR_TS2_Pos;
                 tq_sum = tq;
                 found = true;
                 break;
@@ -86,8 +92,8 @@ bool J1939_CAN_Hardware_Init(void) {
         if (!found) {
             prescaler = pclk1 / (16 * 250000);
             if (prescaler == 0) prescaler = 1;
-            ts1 = CAN_BS1_13TQ;
-            ts2 = CAN_BS2_2TQ;
+            ts1 = CAN_BS1_12TQ;
+            ts2 = CAN_BS2_3TQ;
             tq_sum = 16;
         }
     }
@@ -110,7 +116,7 @@ bool J1939_CAN_Hardware_Init(void) {
 
     hcan.Init.Prescaler = prescaler;
     hcan.Init.Mode = CAN_MODE_NORMAL;
-    hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
+    hcan.Init.SyncJumpWidth = CAN_SJW_2TQ;
     hcan.Init.TimeSeg1 = ts1;
     hcan.Init.TimeSeg2 = ts2;
     hcan.Init.TimeTriggeredMode = DISABLE;
@@ -159,41 +165,43 @@ bool J1939_CAN_Hardware_Transmit(uint32_t pgn,
         return false;
     }
 
-    /* Check if there are free hardware Tx mailboxes */
-    uint32_t free_mailboxes = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
-    if (free_mailboxes == 0) {
-        static uint32_t last_mailbox_warn = 0;
-        if (millis() - last_mailbox_warn > 2000) {
-            uint32_t esr = hcan.Instance->ESR;
-            uint8_t tec = (esr >> 16) & 0xFF;  // Transmit Error Counter
-            uint8_t rec = (esr >> 24) & 0xFF;  // Receive Error Counter
-            uint8_t lec = (esr >> 4) & 0x07;   // Last Error Code
+    /* Check if there are free hardware Tx mailboxes. If not, wait for one to open. */
+    uint32_t start_wait = millis();
+    while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan) == 0) {
+        if (millis() - start_wait > 1) { // 1ms timeout
+            static uint32_t last_mailbox_warn = 0;
+            if (millis() - last_mailbox_warn > 2000) {
+                uint32_t esr = hcan.Instance->ESR;
+                uint8_t tec = (esr >> 16) & 0xFF;  // Transmit Error Counter
+                uint8_t rec = (esr >> 24) & 0xFF;  // Receive Error Counter
+                uint8_t lec = (esr >> 4) & 0x07;   // Last Error Code
 
-            Serial.print("[CAN WARN] Tx Mailboxes FULL! ESR Reg: 0x");
-            Serial.print(esr, HEX);
-            Serial.print(" | TEC: ");
-            Serial.print(tec);
-            Serial.print(" | REC: ");
-            Serial.print(rec);
-            Serial.print(" | Last Error Code (LEC): ");
-            
-            switch (lec) {
-                case 0: Serial.println("0 (No Error)"); break;
-                case 1: Serial.println("1 (Stuff Error)"); break;
-                case 2: Serial.println("2 (Form Error)"); break;
-                case 3: Serial.println("3 (ACK Error - No device is ACKing the message!)"); break;
-                case 4: Serial.println("4 (Bit Recessive Error)"); break;
-                case 5: Serial.println("5 (Bit Dominant Error)"); break;
-                case 6: Serial.println("6 (CRC Error)"); break;
-                default: Serial.println("Unknown"); break;
+                Serial.print("[CAN WARN] Tx Mailboxes FULL (timeout)! ESR Reg: 0x");
+                Serial.print(esr, HEX);
+                Serial.print(" | TEC: ");
+                Serial.print(tec);
+                Serial.print(" | REC: ");
+                Serial.print(rec);
+                Serial.print(" | Last Error Code (LEC): ");
+                
+                switch (lec) {
+                    case 0: Serial.println("0 (No Error)"); break;
+                    case 1: Serial.println("1 (Stuff Error)"); break;
+                    case 2: Serial.println("2 (Form Error)"); break;
+                    case 3: Serial.println("3 (ACK Error - No device is ACKing the message!)"); break;
+                    case 4: Serial.println("4 (Bit Recessive Error)"); break;
+                    case 5: Serial.println("5 (Bit Dominant Error)"); break;
+                    case 6: Serial.println("6 (CRC Error)"); break;
+                    default: Serial.println("Unknown"); break;
+                }
+                Serial.println("  -> Check hardware connections: CANH/CANL swapped? GND connected?");
+                Serial.println("  -> Verify MCP2551 Pin 8 (Rs) is tied to GND for High-Speed mode!");
+                Serial.println("  -> Is a 120 ohm terminating resistor present on the bus?");
+                Serial.println("  -> Is TSMaster connected, active (Normal mode), and set to 250 kbps?");
+                last_mailbox_warn = millis();
             }
-            Serial.println("  -> Check hardware connections: CANH/CANL swapped? GND connected?");
-            Serial.println("  -> Verify MCP2551 Pin 8 (Rs) is tied to GND for High-Speed mode!");
-            Serial.println("  -> Is a 120 ohm terminating resistor present on the bus?");
-            Serial.println("  -> Is TSMaster connected, active (Normal mode), and set to 250 kbps?");
-            last_mailbox_warn = millis();
+            return false;
         }
-        return false;
     }
 
     CAN_TxHeaderTypeDef tx_header;

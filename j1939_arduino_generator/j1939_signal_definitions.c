@@ -130,6 +130,19 @@ const J1939_Signal_Definition_t J1939_Signal_Database[] = {
     },
 
     /* =========================================================================
+     * Engine Fluids 2 PGN 65270 - 500 ms
+     * ========================================================================= */
+    {
+        .pgn = PGN_ENGINE_FLUIDS2,
+        .spn = SPN_INTAKE_MANIFOLD_PRESSURE,
+        .name = "Engine Intake Manifold #1 Pressure",
+        .unit = "kPa",
+        .start_byte = 2, .start_bit = 1, .num_bits = 8,
+        .resolution = 2.0f, .offset = 0.0f,
+        .min_physical = 0.0f, .max_physical = 500.0f
+    },
+
+    /* =========================================================================
      * CCVS1 PGN 65265 - 100 ms
      * ========================================================================= */
     {
@@ -370,9 +383,9 @@ const J1939_Signal_Definition_t J1939_Signal_Database[] = {
         .spn = SPN_ALTERNATOR_CURRENT,
         .name = "Alternator Current",
         .unit = "A",
-        .start_byte = 1, .start_bit = 1, .num_bits = 16,
-        .resolution = 0.05f, .offset = 0.0f,
-        .min_physical = 0.0f, .max_physical = 3212.75f
+        .start_byte = 1, .start_bit = 1, .num_bits = 8,
+        .resolution = 1.0f, .offset = -125.0f,
+        .min_physical = -125.0f, .max_physical = 125.0f
     },
     {
         .pgn = PGN_VOLTS_AMPS,
@@ -380,6 +393,15 @@ const J1939_Signal_Definition_t J1939_Signal_Database[] = {
         .name = "Battery Potential (Voltage)",
         .unit = "V",
         .start_byte = 3, .start_bit = 1, .num_bits = 16,
+        .resolution = 0.05f, .offset = 0.0f,
+        .min_physical = 0.0f, .max_physical = 3212.75f
+    },
+    {
+        .pgn = PGN_VOLTS_AMPS,
+        .spn = SPN_BATTERY_POTENTIAL,
+        .name = "Battery Potential / Power Input 1",
+        .unit = "V",
+        .start_byte = 5, .start_bit = 1, .num_bits = 16,
         .resolution = 0.05f, .offset = 0.0f,
         .min_physical = 0.0f, .max_physical = 3212.75f
     },
@@ -519,6 +541,28 @@ const J1939_Signal_Definition_t J1939_Signal_Database[] = {
         .start_byte = 1, .start_bit = 1, .num_bits = 2,
         .resolution = 1.0f, .offset = 0.0f,
         .min_physical = 0.0f, .max_physical = 3.0f
+    },
+
+    /* =========================================================================
+     * Fuel Economy Liquid PGN 65266 - 100 ms
+     * ========================================================================= */
+    {
+        .pgn = PGN_LFE,
+        .spn = SPN_ENGINE_FUEL_RATE,
+        .name = "Engine Fuel Rate",
+        .unit = "L/h",
+        .start_byte = 1, .start_bit = 1, .num_bits = 16,
+        .resolution = 0.05f, .offset = 0.0f,
+        .min_physical = 0.0f, .max_physical = 3212.75f
+    },
+    {
+        .pgn = PGN_LFE,
+        .spn = SPN_ENGINE_INST_FUEL_ECON,
+        .name = "Engine Instantaneous Fuel Economy",
+        .unit = "km/L",
+        .start_byte = 3, .start_bit = 1, .num_bits = 16,
+        .resolution = 0.001953125f, .offset = 0.0f,
+        .min_physical = 0.0f, .max_physical = 127.998f
     },
 };
 
